@@ -1,6 +1,6 @@
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { AppBar, Button, Toolbar, Typography, Tabs, Tab } from "@mui/material";
-import { useState } from 'react';
+import { useState ,useEffect} from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
@@ -13,13 +13,23 @@ import {
   Route,
   Link
 } from 'react-router-dom';
-import Login from "../login/login"
-import Signup from "../signup/signup"
-import Products from "../products/products"
-function Navigation() {
 
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [isAdmin, setIsAdmin] = useState(false);
+function Navigation(props) {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  console.log("props in navigation :",props);
+    
+        // setIsLoggedIn(true);
+        useEffect(() => {
+          
+          
+          if(props.loggedIn==true && isLoggedIn ==false){
+            setIsLoggedIn(true);
+            console.log("isLoggedin----->",isLoggedIn);
+          }
+        }, [props.loggedIn]);
+      
+    
     const Search = styled('div')(({ theme }) => ({
         position: 'relative',
         borderRadius: theme.shape.borderRadius,
@@ -64,7 +74,7 @@ function Navigation() {
 
     return (
         <>
-        <Router>
+        
             <AppBar sx={{ background: "#4050b5" }}>
                 <Toolbar>
                     <ShoppingCartIcon />
@@ -98,12 +108,8 @@ function Navigation() {
                 </Toolbar>
             </AppBar>
 
-            <Routes>
-                 <Route exact path='/' element={<Products/>}></Route>
-                 <Route exact path='/login' element={<Login/>}></Route>
-                 <Route exact path='/signup' element={<Signup/>}></Route>
-            </Routes>
-            </Router>
+            
+           
         </>
     )
 }

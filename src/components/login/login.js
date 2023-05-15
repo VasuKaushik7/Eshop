@@ -5,13 +5,28 @@ import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
+// import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import axios from "axios";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link,
+  useNavigate
+} from 'react-router-dom';
+import Navigation from '../navigationBar/navigation';
+
+
+
+
+const baseURL = "http://localhost:8080/api/auth/signin";
+
 
 function Copyright(props) {
   return (
@@ -29,17 +44,30 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignIn() {
+  const navigate = useNavigate();
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    axios.post(baseURL, {
+      "username":data.get('email'),
+      "password":data.get('password'),
+      })
+      .then((response) => {
+        console.log("response----->",response.data.token);
+        navigate('/products', { state: { token:response.data.token }})
+      }).catch(error => {
+        console.log("error occured--->",error);
+      });
+
+    // console.log({
+    //   email: data.get('email'),
+    //   password: data.get('password'),
+    // });
   };
 
   return (
     <ThemeProvider theme={theme}>
+    <Navigation/>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
@@ -96,7 +124,7 @@ export default function SignIn() {
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link to="/signup" variant="body2">
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>
