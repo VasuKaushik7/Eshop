@@ -1,0 +1,18 @@
+img{
+    height: 300px;
+    padding: 60px;
+}
+.description{
+    padding: 120px;
+}
+.productName{
+    font-weight: 600;
+    font-size: 35px;
+}
+.available{
+    background: #4050b5;
+    color: white;
+    margin-left: 20px;
+    padding: 8px;
+    border-radius: 12px;
+}

@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
 import {
-    useLocation
+    useLocation,
+    useNavigate
   } from 'react-router-dom';
 import Navigation from '../navigationBar/navigation';
 import Card from '@mui/material/Card';
@@ -11,18 +12,50 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-
+import axios from "axios";
 function Product(){
     const [loggedIn,setLoggedIn]=useState(false);
+    const [items,setItems]=useState([]);
+    const [categories,setCategories]=useState([]);
+    const navigate = useNavigate();
     console.log("token in product--->",useLocation().state);
     if(useLocation().state && loggedIn==false){
         setLoggedIn(true);
     }
-    const [alignment, setAlignment] = React.useState('left');
+    const [alignment, setAlignment] = React.useState(0);
 
   const handleAlignment = (event, newAlignment) => {
     setAlignment(newAlignment);
   };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/products/');
+        console.log("response----->",response.data);
+        setItems(response.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    const fetchData2 = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/products/categories');
+        console.log("response2----->",response.data);
+        setCategories(response.data);
+        // setItems(response.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+    fetchData2();
+  }, []);
+
+  function goToDescription(data){
+    console.log("data--------->",data);
+    navigate('/productDescription', { state: { data:data }})
+  }
 return(
     <>
         <Navigation loggedIn={loggedIn}/>
@@ -33,39 +66,47 @@ return(
       onChange={handleAlignment}
       aria-label="text alignment"
     >
-      <ToggleButton value="left" aria-label="left aligned">
+      <ToggleButton value={0} >
       ALL
       </ToggleButton>
-      <ToggleButton value="center" aria-label="centered">
-       APPAREL
-      </ToggleButton>
-      <ToggleButton value="right" aria-label="right aligned">
-        ELECTRONICS
-      </ToggleButton>
-      <ToggleButton value="justify" aria-label="justified" >
-       PERSONAL CARE
-      </ToggleButton>
+      {categories.map((data,index)=>
+     
+      
+      <ToggleButton value={index+1}>
+          {data}
+        </ToggleButton>
+       
+      )
+      }
     </ToggleButtonGroup>
-        <Card sx={{ maxWidth: 345 }}>
+    <p>Selected Option: {alignment}</p>
+    {items.map((data,index)=>
+    <Card sx={{ maxWidth: 345 }}>
       <CardMedia
-        sx={{ height: 140 }}
-        image="/static/images/cards/contemplative-reptile.jpg"
-        title="green iguana"
+        sx={{ height: "300px" }}
+        image={data.imageUrl}
+        title={data.name}
       />
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
-          Lizard
+          {data.name}
+
+          <Typography>
+          {data.price}
         </Typography>
+          
+        </Typography>
+        
         <Typography variant="body2" color="text.secondary">
-          Lizards are a widespread group of squamate reptiles, with over 6,000
-          species, ranging across all continents except Antarctica
+          {data.description}
         </Typography>
       </CardContent>
       <CardActions>
-        <Button size="small">Share</Button>
-        <Button size="small">Learn More</Button>
+      <Button variant="contained" color="primary" onClick={()=>{goToDescription(data)}}>
+      BUY
+      </Button>
       </CardActions>
-    </Card>
+    </Card>)}
     </>
 )
 }

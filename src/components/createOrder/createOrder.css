@@ -1,0 +1,29 @@
+.app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensures the content takes at least the full height of the viewport */
+  }
+  
+  .content {
+    flex: 1; /* Allows the content to fill the available space, pushing the fixed-div to the bottom */
+  }
+  
+  .fixed-div {
+    padding: 20px;
+    margin-left: 316px;
+  }
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+  }
+  
+  .centered-div {
+    /* Styles for the centered div */
+  }
+  .centered-textfield {
+    text-align: center;
+    width: 300px; /* Adjust the width as needed */
+    /* Additional styles for the centered TextField */
+  }

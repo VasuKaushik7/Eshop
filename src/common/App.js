@@ -10,6 +10,8 @@ import {
 
 import Signup from "../components/signup/signup"
 import Products from "../components/products/products"
+import ProductDescription from '../components/productDescription/productDescription';
+import CreateOrder from '../components/createOrder/createOrder';
 
 function App() {
   return (
@@ -20,6 +22,9 @@ function App() {
                  {/* <Route exact path='/login' element={<Login/>}></Route> */}
                  <Route exact path='/signup' element={<Signup/>}></Route>
                  <Route exact path='/products' element={<Products/>}></Route>
+                 <Route exact path='/productDescription' element={<ProductDescription/>}></Route>
+                 <Route exact path='/createOrder' element={<CreateOrder/>}></Route>
+
             </Routes>
     </Router>
 

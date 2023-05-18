@@ -82,7 +82,7 @@ function Navigation(props) {
                         upGrad E-Shop
                     </Typography>
                     {!isLoggedIn && <Tabs sx={{ marginLeft: "auto" }} textColor="inherit">
-                    <Link to="/login"><Tab sx={{ background: "#fffff", textDecoration: "underline" }} label="Login"></Tab></Link>
+                    <Link to="/"><Tab sx={{ background: "#fffff", textDecoration: "underline" }} label="Login"></Tab></Link>
                     <Link to="/signup"><Tab sx={{ background: "#fffff", textDecoration: "underline" }} label="Singup"></Tab></Link>
                     </Tabs>
                     }
