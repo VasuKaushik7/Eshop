@@ -179,6 +179,16 @@ function Product(){
     console.log("data--------->",data);
     navigate('/productDescription', { state: { data:data }})
   }
+  const handleSearch = (value) => {
+    console.log("value in products----->",value);
+    const filteredData = orginalData.filter((item) =>
+      item.name.toLowerCase().includes(value.toLowerCase())
+    );
+    console.log('Filtered Data:', filteredData);
+    setItems(filteredData);
+
+    };
+
   function handleDelete(id){
      axios.delete("http://localhost:8080/api/products/"+id).then((response) => {
     console.log("deleted")
@@ -190,7 +200,7 @@ function Product(){
    }
 return(
     <>
-        <Navigation loggedIn={loggedIn} isAdmin={isAdmin}/>
+        <Navigation loggedIn={loggedIn} isAdmin={isAdmin} callSearch={handleSearch}/>
         <p>Products Page...</p>
         
         <ToggleButtonGroup
