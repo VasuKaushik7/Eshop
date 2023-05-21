@@ -101,21 +101,21 @@ function Navigation(props) {
     return (
         <>
         
-            <AppBar sx={{ background: "#4050b5" }}>
+            <AppBar sx={{ background: "#3f51b5" }}>
                 <Toolbar>
                     <ShoppingCartIcon />
                     <Typography sx={{ marginLeft: "10px" }}>
                         upGrad E-Shop
                     </Typography>
                     {!isLoggedIn && <Tabs sx={{ marginLeft: "auto" }} textColor="inherit">
-                    <Link to="/"><Tab sx={{ background: "#fffff", textDecoration: "underline" }} label="Login"></Tab></Link>
-                    <Link to="/signup"><Tab sx={{ background: "#fffff", textDecoration: "underline" }} label="Singup"></Tab></Link>
+                    <Link to="/"><Tab sx={{ background: "#fffff", textDecoration: "underline" , color:"white" , textTransform:"none"}} label="Login"></Tab></Link>
+                    <Link to="/signup"><Tab sx={{ background: "#fffff", textDecoration: "underline" , color:"white" , textTransform:"none"}} label="Sign Up"></Tab></Link>
                     </Tabs>
                     }
                     {
                         isLoggedIn &&
                         <>
-                         <Search  >
+                         <Search style={{"margin-left": "14%","width": "399px"}} >
                             <SearchIconWrapper>
                                 <SearchIcon />
                             </SearchIconWrapper>
