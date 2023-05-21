@@ -12,6 +12,10 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import {
+  useLocation,
+  useNavigate
+} from 'react-router-dom';
 import axios from "axios";
 import {
   BrowserRouter as Router,
@@ -19,14 +23,16 @@ import {
   Route,
   Link
 } from 'react-router-dom';
-
+import {categoriesGlobal} from '../products/products'
 import Navigation from '../navigationBar/navigation';
-
+import CreatableSelect from 'react-select/creatable';
+import { token } from '../login/login'
 
 const baseURL = "http://localhost:8080/api/auth/signup";
 
 
 function Copyright(props) {
+  
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {'Copyright © '}
@@ -42,26 +48,42 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function AddProduct() {
+  const navigate = useNavigate();
+  const [ category,setCategory]= React.useState(null);
+  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  
+  const handleChange = (newValue) => {
+    console.log(newValue);
+    setCategory(newValue.value);
+  };
   const handleSubmit = (event) => {
     event.preventDefault();
-    // const data = new FormData(event.currentTarget);
-    // axios.post(baseURL, {
-    //   "email":data.get('email'),
-    //   "password":data.get('password'),
-    //   "firstName":data.get('firstName'),
-    //   "lastName":data.get('lastName'),
-    //   "contactNumber":data.get('contact')
-    //   })
-    //   .then((response) => {
-    //     console.log("response----->",response)
-    //   }).catch(error => {
-    //     console.log("error occured--->",error);
-    //   });
-    // if()
-    // console.log({
-    //   email: data.get('email'),
-    //   password: data.get('password'),
-    // });
+    const data = new FormData(event.currentTarget);
+    
+    axios.post("http://localhost:8080/api/products/", {
+      
+        "name":data.get('Name'),
+        "category":category,
+        "price":data.get('Price'),
+        "description":data.get('Product'),
+        "manufacturer":data.get('Manufacturer'),
+        "availableItems":data.get('Available'),
+        "imageUrl":data.get('Image')
+      })
+      .then((response) => {
+        console.log("response----->",response);
+        navigate('/products',{ state: { productAdded:true }})
+        // navigate('/productDescription', { state: { data:data }})
+        // token=response.data.token;
+        // axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      //   checkIfAdmin();
+      //  console.log("isAdmin------->",isAnAdmin);
+        // setTimeout(() => {
+         
+        // }, 5000); 
+      }).catch(error => {
+        console.log("error occured--->",error);
+      });
   };
 
   return (
@@ -78,11 +100,11 @@ export default function AddProduct() {
             alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            Add Product
-          </Avatar>
+          {/* <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+           
+          </Avatar> */}
           <Typography component="h1" variant="h5">
-            Sign up
+          Add Product
           </Typography>
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
@@ -98,14 +120,7 @@ export default function AddProduct() {
                 />
               </Grid>
               <Grid item xs={12} >
-                <TextField
-                  required
-                  fullWidth
-                  id="Category"
-                  label="Category"
-                  name="Category"
-                  autoComplete="Category"
-                />
+              <CreatableSelect isClearable  onChange={handleChange} options={categoriesGlobal} />
               </Grid>
               <Grid item xs={12}>
                 <TextField

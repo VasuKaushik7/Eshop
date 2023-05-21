@@ -17,8 +17,11 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Link
+  Link,
+  useLocation,
+  useNavigate
 } from 'react-router-dom';
+
 import Navigation from '../navigationBar/navigation';
 
 
@@ -41,32 +44,41 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function ModifyProduct() {
+  const navigate = useNavigate();
+  const [data, setData] = React.useState(null);
+  let temp1 = useLocation();
+  if (temp1.state && temp1.state.data) {
+    console.log("data----->", temp1.state.data);
+    if (data == null) {
+      setData(temp1.state.data);
+    }
+  }
   const handleSubmit = (event) => {
     event.preventDefault();
-    // const data = new FormData(event.currentTarget);
-    // axios.post(baseURL, {
-    //   "email":data.get('email'),
-    //   "password":data.get('password'),
-    //   "firstName":data.get('firstName'),
-    //   "lastName":data.get('lastName'),
-    //   "contactNumber":data.get('contact')
-    //   })
-    //   .then((response) => {
-    //     console.log("response----->",response)
-    //   }).catch(error => {
-    //     console.log("error occured--->",error);
-    //   });
-    // if()
-    // console.log({
-    //   email: data.get('email'),
-    //   password: data.get('password'),
-    // });
+    const data2 = new FormData(event.currentTarget);
+    axios.put("http://localhost:8080/api/products/" + data.id, {
+      "name": data2.get('Name'),
+      "category": data2.get('Category'),
+      "price": data2.get('Price'),
+      "description": data2.get('Product'),
+      "manufacturer": data2.get('Manufacturer'),
+      "availableItems": data2.get('Available'),
+      "imageUrl": data2.get('Image')
+    })
+      .then((response) => {
+        console.log("response----->", response)
+        navigate('/products',{ state: { productModified:true }})
+
+      }).catch(error => {
+        console.log("error occured--->", error);
+      });
+  
   };
 
   return (
-   
+
     <ThemeProvider theme={theme}>
-    <Navigation />
+      <Navigation />
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
@@ -77,11 +89,11 @@ export default function ModifyProduct() {
             alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            Modify Product
-          </Avatar>
+          {/* <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+           
+          </Avatar> */}
           <Typography component="h1" variant="h5">
-            Sign up
+            Modify Product
           </Typography>
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
@@ -94,6 +106,7 @@ export default function ModifyProduct() {
                   id="Name"
                   label="Name"
                   autoFocus
+                  defaultValue={data ? data.name : ''}
                 />
               </Grid>
               <Grid item xs={12} >
@@ -104,6 +117,7 @@ export default function ModifyProduct() {
                   label="Category"
                   name="Category"
                   autoComplete="Category"
+                  defaultValue={data ? data.category : ''}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -114,6 +128,7 @@ export default function ModifyProduct() {
                   label="Manufacturer"
                   name="Manufacturer"
                   autoComplete="Manufacturer"
+                  defaultValue={data ? data.manufacturer : ''}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -125,6 +140,7 @@ export default function ModifyProduct() {
                   type="Available"
                   id="Available"
                   autoComplete="Available"
+                  defaultValue={data ? data.availableItems : ''}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -136,6 +152,7 @@ export default function ModifyProduct() {
                   type="Price"
                   id="Price"
                   autoComplete="Price"
+                  defaultValue={data ? data.price : ''}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -146,6 +163,7 @@ export default function ModifyProduct() {
                   label="Image URL"
                   name="Image"
                   autoComplete="Image"
+                  defaultValue={data ? data.imageUrl : ''}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -156,9 +174,10 @@ export default function ModifyProduct() {
                   label="Product Description"
                   name="Product"
                   autoComplete="Product"
+                  defaultValue={data ? data.description : ''}
                 />
               </Grid>
-              
+
             </Grid>
             <Button
               type="submit"
@@ -166,16 +185,16 @@ export default function ModifyProduct() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-             MODIFY PRODUCT
+              MODIFY PRODUCT
             </Button>
             <Grid container justifyContent="flex-end">
-              
+
             </Grid>
           </Box>
         </Box>
-       
+
       </Container>
     </ThemeProvider>
-   
+
   );
 }

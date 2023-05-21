@@ -17,38 +17,101 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { token } from '../login/login'
+import { isAnAdmin } from '../login/login';
+
+export let categoriesGlobal=[];
 function Product(){
     const [loggedIn,setLoggedIn]=useState(false);
     const [items,setItems]=useState([]);
+    const [orginalData,setOriginalData]=useState([]);
     const [categories,setCategories]=useState([]);
     const navigate = useNavigate();
     const [orderPlaced,setOrderPlaced]=useState(false);
+    const [productModified,setProductModified]=useState(false);
+    const [productAdded,setProductAdded]=useState(false);
     const [open, setOpen] = React.useState(true);
+    const [modified, setModified] = React.useState(true);
+    const [added, setAdded] = React.useState(true);
     const [isAdmin, setIsAdmin] = useState(false);
     const Alert = React.forwardRef(function Alert(props, ref) {
       return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
     });
-    console.log("token in product--->",useLocation().state);
-    let token=useLocation().state.token;
+    // console.log("token in product--->",useLocation().state);
+    // let token=useLocation().state.token;
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     let temp1=useLocation();
-    if(useLocation().state && loggedIn==false){
-        if(temp1.state.order){
-          setOrderPlaced(true);
+    if(token==null){
+      navigate('/')
+    }
+    else{
+      // console.log("temp1----------->",temp1,temp1.state.productAdded);
+     
+      if(temp1.state && temp1.state.order){
+        if(orderPlaced==false){
+        setOrderPlaced(true);
           setTimeout(() => {
             setOpen(false);
           }, 5000);
         }
+     
+      }
+      if(temp1.state && temp1.state.productAdded){
+        console.log("inside product added if")
+        if(productAdded==false){
+        setProductAdded(true);
+        setTimeout(() => {
+          setAdded(false);
+        }, 5000);
+      }
+      }
+      if(temp1.state && temp1.state.productModified){
+        console.log("inside product modified if")
+        if(productModified==false){
+        setProductModified(true);
+        setTimeout(() => {
+          setModified(false);
+        }, 5000);
+      }
+      }
+      if(loggedIn==false){
+      setLoggedIn(true);
+      }
+      if(isAdmin==false && isAnAdmin==true ){
+        setIsAdmin(true);
+      }
+    }
+
+    // if(useLocation().state && loggedIn==false){
+    //     if(temp1.state.order){
+          // setOrderPlaced(true);
+          // setTimeout(() => {
+          //   setOpen(false);
+          // }, 5000);
+    //     }
        
-        setLoggedIn(true);
-    }
-    if(temp1.state.isAdmin && isAdmin==false){
-      setIsAdmin(true);
-    }
+        // setLoggedIn(true);
+    // }
+    // if(temp1.state.isAdmin && isAdmin==false){
+    //   setIsAdmin(true);
+    // }
     const [alignment, setAlignment] = React.useState(0);
 
   const handleAlignment = (event, newAlignment) => {
+    console.log("newAlignment----->",newAlignment)
+    if(newAlignment==null || newAlignment==0){
+      setItems(orginalData);
     setAlignment(newAlignment);
+    }
+    else{
+      let categorySelected=categories[newAlignment-1];
+      console.log("categorySelected-----",categorySelected,categories);
+      const filteredData = orginalData.filter(item => item.category==categorySelected);
+      setItems(filteredData);
+      console.log("items----->",items);
+      console.log("filteredData------>",filteredData);
+    }
+
   };
   useEffect(() => {
     const fetchData = async () => {
@@ -56,6 +119,7 @@ function Product(){
         const response = await axios.get('http://localhost:8080/api/products/');
         console.log("response----->",response.data);
         setItems(response.data);
+        setOriginalData(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -64,6 +128,10 @@ function Product(){
       try {
         const response = await axios.get('http://localhost:8080/api/products/categories');
         console.log("response2----->",response.data);
+        categoriesGlobal=[];
+        for(let i=0 ;i<response.data.length;i++){
+          categoriesGlobal.push({"value":response.data[i] ,"label":response.data[i]})
+        }
         setCategories(response.data);
         // setItems(response.data);
       } catch (error) {
@@ -82,6 +150,7 @@ function Product(){
           const response = await axios.get('http://localhost:8080/api/products/');
           console.log("response----->",response.data);
           setItems(response.data);
+          setOriginalData(response.data);
         } catch (error) {
           console.error('Error fetching data:', error);
         }
@@ -90,6 +159,10 @@ function Product(){
         try {
           const response = await axios.get('http://localhost:8080/api/products/categories');
           console.log("response2----->",response.data);
+          categoriesGlobal=[];
+          for(let i=0 ;i<response.data.length;i++){
+            categoriesGlobal.push({"value":response.data[i] ,"label":response.data[i]})
+          }
           setCategories(response.data);
           // setItems(response.data);
         } catch (error) {
@@ -144,7 +217,17 @@ return(
           Order placed successfully
         </Alert>
       </Snackbar>}
-    <p>Selected Option: {alignment}</p>
+      {productAdded&& <Snackbar open={added} autoHideDuration={6000} >
+        <Alert severity="success" sx={{ width: '100%' }}>
+         Product Added successfully.
+        </Alert>
+      </Snackbar>}
+      {productModified&& <Snackbar open={modified} autoHideDuration={6000} >
+        <Alert severity="success" sx={{ width: '100%' }}>
+         Product Modified successfully.
+        </Alert>
+      </Snackbar>}
+    {/* <p>Selected Option: {alignment}</p> */}
     {items.map((data,index)=>
     <Card sx={{ maxWidth: 345 }}>
       <CardMedia

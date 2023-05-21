@@ -88,6 +88,15 @@ function Navigation(props) {
       function handleGoToHome(){
         navigate('/products')
       }
+      function handleLogout(){
+        if(isLoggedIn==true){
+        setIsLoggedIn(false);
+        }
+        if(isAdmin==true){
+        setIsAdmin(false);
+        }
+        navigate('/')
+      }
 
     return (
         <>
@@ -115,7 +124,7 @@ function Navigation(props) {
                         <Tabs sx={{ marginLeft: "auto" }} textColor="inherit">
                         <Tab sx={{ background: "#fffff", textDecoration: "underline" }} onClick={()=>{handleGoToHome()}} label="Home"></Tab>
                         {isAdmin&&<Tab sx={{ background: "#fffff", textDecoration: "underline" }} label="Add Product" onClick={()=>{handleAddProduct()}}></Tab>}
-                        <Button variant="contained" color="error">LOGOUT</Button>
+                        <Button variant="contained" color="error" onClick={()=>handleLogout()}>LOGOUT</Button>
                     </Tabs>
 
                         </>
