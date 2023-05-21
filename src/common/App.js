@@ -12,6 +12,8 @@ import Signup from "../components/signup/signup"
 import Products from "../components/products/products"
 import ProductDescription from '../components/productDescription/productDescription';
 import CreateOrder from '../components/createOrder/createOrder';
+import ModifyProduct from '../components/modifyProduct/modifyProduct';
+import AddProduct from '../components/addProduct/addProduct';
 
 function App() {
   return (
@@ -24,7 +26,8 @@ function App() {
                  <Route exact path='/products' element={<Products/>}></Route>
                  <Route exact path='/productDescription' element={<ProductDescription/>}></Route>
                  <Route exact path='/createOrder' element={<CreateOrder/>}></Route>
-
+                 <Route exact path='/modify' element={<ModifyProduct/>}></Route>
+                 <Route exact path='/addProduct' element={<AddProduct/>}></Route>
             </Routes>
     </Router>
 

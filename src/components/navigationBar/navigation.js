@@ -11,24 +11,34 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Link
+  Link,
+  useNavigate
 } from 'react-router-dom';
-
+import { token,isAnAdmin } from '../login/login';
 function Navigation(props) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const navigate = useNavigate();
   console.log("props in navigation :",props);
     
         // setIsLoggedIn(true);
-        useEffect(() => {
+        // useEffect(() => {
           
           
-          if(props.loggedIn==true && isLoggedIn ==false){
-            setIsLoggedIn(true);
-            console.log("isLoggedin----->",isLoggedIn);
-          }
-        }, [props.loggedIn]);
-      
+        //   if(props.loggedIn==true && isLoggedIn ==false){
+        //     setIsLoggedIn(true);
+        //     console.log("isLoggedin----->",isLoggedIn);
+        //     if(props.isAdmin && isAdmin==false){
+        //       setIsAdmin(true);
+        //     }
+        //   }
+        // }, [props.loggedIn]);
+      if(token!=null && isLoggedIn==false){
+        setIsLoggedIn(true);
+      }
+      if(isAnAdmin && isAdmin==false){
+        setIsAdmin(true);
+      }
     
     const Search = styled('div')(({ theme }) => ({
         position: 'relative',
@@ -72,6 +82,13 @@ function Navigation(props) {
         justifyContent: 'center',
       }));
 
+      function handleAddProduct(){
+        navigate('/addProduct')
+      }
+      function handleGoToHome(){
+        navigate('/products')
+      }
+
     return (
         <>
         
@@ -96,8 +113,8 @@ function Navigation(props) {
                             <StyledInputBase placeholder="Search…" inputProps={{ 'aria-label': 'search' }} />
                         </Search>
                         <Tabs sx={{ marginLeft: "auto" }} textColor="inherit">
-                        <Tab sx={{ background: "#fffff", textDecoration: "underline" }} label="Home"></Tab>
-                        {isAdmin&&<Tab sx={{ background: "#fffff", textDecoration: "underline" }} label="Add Product"></Tab>}
+                        <Tab sx={{ background: "#fffff", textDecoration: "underline" }} onClick={()=>{handleGoToHome()}} label="Home"></Tab>
+                        {isAdmin&&<Tab sx={{ background: "#fffff", textDecoration: "underline" }} label="Add Product" onClick={()=>{handleAddProduct()}}></Tab>}
                         <Button variant="contained" color="error">LOGOUT</Button>
                     </Tabs>
 

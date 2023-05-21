@@ -13,14 +13,37 @@ import Typography from '@mui/material/Typography';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import axios from "axios";
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 function Product(){
     const [loggedIn,setLoggedIn]=useState(false);
     const [items,setItems]=useState([]);
     const [categories,setCategories]=useState([]);
     const navigate = useNavigate();
+    const [orderPlaced,setOrderPlaced]=useState(false);
+    const [open, setOpen] = React.useState(true);
+    const [isAdmin, setIsAdmin] = useState(false);
+    const Alert = React.forwardRef(function Alert(props, ref) {
+      return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+    });
     console.log("token in product--->",useLocation().state);
+    let token=useLocation().state.token;
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    let temp1=useLocation();
     if(useLocation().state && loggedIn==false){
+        if(temp1.state.order){
+          setOrderPlaced(true);
+          setTimeout(() => {
+            setOpen(false);
+          }, 5000);
+        }
+       
         setLoggedIn(true);
+    }
+    if(temp1.state.isAdmin && isAdmin==false){
+      setIsAdmin(true);
     }
     const [alignment, setAlignment] = React.useState(0);
 
@@ -52,14 +75,51 @@ function Product(){
     fetchData2();
   }, []);
 
+  function fetchNewData(){
+    // useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const response = await axios.get('http://localhost:8080/api/products/');
+          console.log("response----->",response.data);
+          setItems(response.data);
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      };
+      const fetchData2 = async () => {
+        try {
+          const response = await axios.get('http://localhost:8080/api/products/categories');
+          console.log("response2----->",response.data);
+          setCategories(response.data);
+          // setItems(response.data);
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      };
+  
+      fetchData();
+      fetchData2();
+    // }, []);
+  }
+
   function goToDescription(data){
     console.log("data--------->",data);
     navigate('/productDescription', { state: { data:data }})
   }
+  function handleDelete(id){
+     axios.delete("http://localhost:8080/api/products/"+id).then((response) => {
+    console.log("deleted")
+    fetchNewData();
+  }).catch(error=>{})
+  }
+   function handleModify(data){
+    navigate('/modify', { state: { data:data }})
+   }
 return(
     <>
-        <Navigation loggedIn={loggedIn}/>
+        <Navigation loggedIn={loggedIn} isAdmin={isAdmin}/>
         <p>Products Page...</p>
+        
         <ToggleButtonGroup
       value={alignment}
       exclusive
@@ -79,6 +139,11 @@ return(
       )
       }
     </ToggleButtonGroup>
+    {orderPlaced&& <Snackbar open={open} autoHideDuration={6000} >
+        <Alert severity="success" sx={{ width: '100%' }}>
+          Order placed successfully
+        </Alert>
+      </Snackbar>}
     <p>Selected Option: {alignment}</p>
     {items.map((data,index)=>
     <Card sx={{ maxWidth: 345 }}>
@@ -105,6 +170,8 @@ return(
       <Button variant="contained" color="primary" onClick={()=>{goToDescription(data)}}>
       BUY
       </Button>
+      <EditIcon sx={{"color": "gray"}} onClick={()=>{handleModify(data)}}></EditIcon>
+      <DeleteIcon sx={{"color": "gray"}} onClick={()=>{handleDelete(data.id)}}></DeleteIcon>
       </CardActions>
     </Card>)}
     </>

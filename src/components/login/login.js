@@ -42,9 +42,11 @@ function Copyright(props) {
 }
 
 const theme = createTheme();
-
+export let token = null;
+export let isAnAdmin=false;
 export default function SignIn() {
   const navigate = useNavigate();
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -54,7 +56,13 @@ export default function SignIn() {
       })
       .then((response) => {
         console.log("response----->",response.data.token);
-        navigate('/products', { state: { token:response.data.token }})
+        token=response.data.token;
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        checkIfAdmin();
+       console.log("isAdmin------->",isAnAdmin);
+        // setTimeout(() => {
+         
+        // }, 5000); 
       }).catch(error => {
         console.log("error occured--->",error);
       });
@@ -64,6 +72,34 @@ export default function SignIn() {
     //   password: data.get('password'),
     // });
   };
+  async function checkIfAdmin(){
+    await axios.post("http://localhost:8080/api/products/", {
+      "name":"Reebok Shoe",
+      "category":"Shoe",
+      "price":"2000",
+      "description":"This is a running shoe for every enthusiast goo quality.",
+      "manufacturer":"Reebok",
+      "availableItems":"20",
+      "imageUrl":"https://assets.ajio.com/medias/sys_master/root/20230112/f3Yt/63bfe75eaeb269c651dab3db/-473Wx593H-469105071-black-MODEL.jpg"
+      })
+      .then( (response) => {
+        console.log("response----->",response);
+         deleteProduct(response)
+        return true
+      }).catch(error => {
+        isAnAdmin=false
+        navigate('/products', { state: { token:token, isAdmin:false }})
+        console.log("error occured--->",error);
+        return false
+      });
+  }
+  async function deleteProduct(response){
+    
+   await axios.delete("http://localhost:8080/api/products/"+response.data).then((response) => {
+    isAnAdmin=true;
+   navigate('/products', { state: { token:token, isAdmin:true }})
+  }).catch(error=>{})
+  }
 
   return (
     <ThemeProvider theme={theme}>
