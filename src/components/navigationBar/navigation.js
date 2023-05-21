@@ -101,7 +101,9 @@ function Navigation(props) {
   const searchInputRef = useRef(null);
 
   useEffect(() => {
+    if(searchInputRef.current){
     searchInputRef.current.focus();
+  }
   }, []);
 
   const handleSearchChange = (event) => {
