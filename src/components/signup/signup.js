@@ -23,6 +23,7 @@ import {
 } from 'react-router-dom';
 import React, { useState, useEffect } from "react";
 import Navigation from '../navigationBar/navigation';
+import { fabClasses } from '@mui/material';
 
 
 const baseURL = "http://localhost:8080/api/auth/signup";
@@ -45,8 +46,11 @@ const theme = createTheme();
 
 export default function SignUp() {
   const [success, setSuccess] = useState(false);
+  
+  const [errorMessage, setErrorMessage] = useState("error occured");
   const [open, setOpen] = useState(true);
   const [passwordError,setPasswordError]=useState(false);
+  const [failure,setFaliure]=useState(false);
   const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
   });
@@ -113,6 +117,13 @@ export default function SignUp() {
           }, 5000);
         }).catch(error => {
           console.log("error occured--->", error);
+          setErrorMessage(error.response.data.message);
+          setFaliure(true);
+          setTimeout(() => {
+            setOpen(false);
+            setFaliure(false);
+            setOpen(true);
+          }, 5000);
         });
       // if()
       // console.log({
@@ -265,6 +276,12 @@ export default function SignUp() {
         {success && <Snackbar open={open} autoHideDuration={6000} >
           <Alert severity="success" sx={{ width: '100%' }}>
             User registered successfully!
+          </Alert>
+        </Snackbar>}
+        
+        {failure && <Snackbar open={open} autoHideDuration={6000} >
+          <Alert severity="error" sx={{ width: '100%' }}>
+            {errorMessage}
           </Alert>
         </Snackbar>}
       </Container>
