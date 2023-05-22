@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState ,useEffect} from "react";
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -12,6 +12,8 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 import axios from "axios";
 import {
   BrowserRouter as Router,
@@ -46,9 +48,44 @@ export let token = null;
 export let isAnAdmin=false;
 export default function SignIn() {
   const navigate = useNavigate();
-
+  const [failure,setFaliure]=useState(false);
+  const [open,setOpen]=useState(true);
+  const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
+  const [inputValues, setInputValues] = useState({
+  
+    email: '',
+    password: ''
+  
+  });
+  const [errors, setErrors] = useState({
+  
+    email: false,
+    password: false
+    
+  });
+  
   const handleSubmit = (event) => {
     event.preventDefault();
+    let formIsValid = true;
+    const updatedErrors = {};
+
+    // Check for empty fields
+    Object.entries(inputValues).forEach(([key, value]) => {
+      if (value.trim() === '') {
+        formIsValid = false;
+        updatedErrors[key] = true;
+      }
+    });
+
+    if (!formIsValid) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        ...updatedErrors,
+      }));
+    }
+    else{
     const data = new FormData(event.currentTarget);
     axios.post(baseURL, {
       "username":data.get('email'),
@@ -65,12 +102,20 @@ export default function SignIn() {
         // }, 5000); 
       }).catch(error => {
         console.log("error occured--->",error);
+        setFaliure(true);
+        setTimeout(() => {
+          setOpen(false);
+          setFaliure(false);
+          setOpen(true);
+        },5000);
+
       });
 
     // console.log({
     //   email: data.get('email'),
     //   password: data.get('password'),
     // });
+    }
   };
   async function checkIfAdmin(){
     await axios.post("http://localhost:8080/api/products/", {
@@ -101,6 +146,17 @@ export default function SignIn() {
   }).catch(error=>{})
   }
 
+  function handleInputChange (event) {
+    const { name, value } = event.target;
+    setInputValues((prevInputValues) => ({
+      ...prevInputValues,
+      [name]: value,
+    }));
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: false,
+    }));
+  };
   return (
     <ThemeProvider theme={theme}>
     <Navigation/>
@@ -130,6 +186,10 @@ export default function SignIn() {
               name="email"
               autoComplete="email"
               autoFocus
+              value={inputValues.email}
+              onChange={handleInputChange}
+              error={errors.email}
+              helperText={errors.email ? 'Field cannot be empty' : ''}
             />
             <TextField
               margin="normal"
@@ -140,6 +200,10 @@ export default function SignIn() {
               type="password"
               id="password"
               autoComplete="current-password"
+              value={inputValues.password}
+              onChange={handleInputChange}
+              error={errors.password}
+              helperText={errors.password ? 'Field cannot be empty' : ''}
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
@@ -168,6 +232,11 @@ export default function SignIn() {
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
+        {failure && <Snackbar open={open} autoHideDuration={6000} >
+          <Alert severity="error" sx={{ width: '100%' }}>
+            Invalid Credentials...
+          </Alert>
+        </Snackbar>}
       </Container>
     </ThemeProvider>
   );
