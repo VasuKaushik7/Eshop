@@ -46,6 +46,7 @@ const theme = createTheme();
 export default function SignUp() {
   const [success, setSuccess] = useState(false);
   const [open, setOpen] = useState(true);
+  const [passwordError,setPasswordError]=useState(false);
   const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
   });
@@ -83,6 +84,9 @@ export default function SignUp() {
         ...prevErrors,
         ...updatedErrors,
       }));
+    }
+    else if(inputValues.password!=inputValues.cpassword){
+      setPasswordError(true);
     }
     else {
       const data = new FormData(event.currentTarget);
@@ -206,7 +210,7 @@ export default function SignUp() {
                   value={inputValues.password}
                   onChange={handleInputChange}
                   error={errors.password}
-                  helperText={errors.password ? 'Field cannot be empty' : ''}
+                  helperText={errors.password ? 'Field cannot be empty' : passwordError?'Passwords donot match':''}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -221,7 +225,7 @@ export default function SignUp() {
                   value={inputValues.cpassword}
                   onChange={handleInputChange}
                   error={errors.cpassword}
-                  helperText={errors.cpassword ? 'Field cannot be empty' : ''}
+                  helperText={errors.cpassword ? 'Field cannot be empty' : passwordError?'Passwords donot match':''}
                 />
               </Grid>
               <Grid item xs={12}>
